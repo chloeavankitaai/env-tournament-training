@@ -279,7 +279,7 @@ def get_training_json(train_info: dict) -> dict:
         # get lr from lrs_lookup.py
         lr = get_grpo_lr(model_name)
         run_config["learning_rate"] = lr
-    run_config["learning_rate"] = 2.5e-5
+    run_config["learning_rate"] = 3.5e-5
 
     run_config["learning_rate"] *= train_info["reg_ratio"]
 
