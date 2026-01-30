@@ -691,7 +691,7 @@ def rollout_full_prompt_and_completion_parallelized_curriculum(
             final_max_turn=30,
             rollouts_per_stage=1024,
             initial_hint_prob=0.7,
-            final_hint_prob=0.1,
+            final_hint_prob=0.0,
             warmup_rollouts=1024,
         )
 
