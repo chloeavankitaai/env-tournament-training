@@ -115,12 +115,12 @@ def extract_bid_from_action(action_text, obs_text):
         return None
     
 
-def get_hand_cards(observation_text: str, player_id: int = 0) -> list[int] | None:
+def get_hand_cards(observation_text: str, player_id: int = 0) -> list[int]:
     """Count how many cards remain in the player's hand."""
     pattern = rf"P{player_id} hand:\s*([\d ]+)"
     match = re.search(pattern, observation_text)
     if not match:
-        return None
+        return []
     string_cards = match.group(1).strip().split()
     return [int(card) for card in string_cards]
 
