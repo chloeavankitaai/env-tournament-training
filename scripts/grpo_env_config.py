@@ -182,6 +182,7 @@ def get_run_cmd(config: dict, gpu_nums: int):
         "disable_fa",
         "disable_action_mask",
         "beta",
+        "environment_name",
     ]
     for key in required_keys:
         if key not in config:
@@ -199,6 +200,7 @@ def get_run_cmd(config: dict, gpu_nums: int):
         start_cmd
         + """ train_grpo_env.py \
     --request_path {request_path} \
+    --environment_name {environment_name} \
     --bf16 True \
     --report_to wandb \
     --output_dir /workspace/data/trained_model \
@@ -257,6 +259,8 @@ def get_run_cmd(config: dict, gpu_nums: int):
         template = template + f" --initial_max_turn {config.get('initial_max_turn', 2)}"
     if config.get("rollouts_per_stage", 1280) != 1280:
         template = template + f" --rollouts_per_stage {config.get('rollouts_per_stage', 1280)}"
+        
+    print(f"template: {template}", flush=True)
     return template
 
 
@@ -291,6 +295,7 @@ def get_training_json(train_info: dict) -> dict:
         "num_generations": config.get("num_generations", 4),
         "initial_max_turn": config.get("initial_max_turn", 2),
         "rollouts_per_stage": config.get("rollouts_per_stage", 1280),
+        "environment_name": train_info.get("dataset_type", {}).get("environment_name"),
     }
 
     if model_name == "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5":

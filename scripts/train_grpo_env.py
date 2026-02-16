@@ -44,16 +44,31 @@ from alf_world_environment_functions import (
     alfworld_rollout_first_prompt_and_completion_parallelized, alfworld_rollout_full_prompt_and_completion_parallelized,
     alfworld_rollout_reward_func
 )
-from game_world_environment_function import (
-    rollout_first_prompt_and_completion as game_world_rollout_first_prompt_and_completion,
-    rollout_last_prompt_and_completion_parallelized_curriculum as game_world_rollout_last_prompt_and_completion_parallelized_curriculum,
-    rollout_full_prompt_and_completion_parallelized_curriculum as game_world_rollout_full_prompt_and_completion_parallelized_curriculum,
-    rollout_reward_func as game_world_rollout_reward_func
+from goof_spiel_environment_function import (
+    rollout_first_prompt_and_completion as goof_spiel_rollout_first_prompt_and_completion,
+    rollout_last_prompt_and_completion_parallelized_curriculum as goof_spiel_rollout_last_prompt_and_completion_parallelized_curriculum,
+    rollout_full_prompt_and_completion_parallelized_curriculum as goof_spiel_rollout_full_prompt_and_completion_parallelized_curriculum,
+    rollout_reward_func as goof_spiel_rollout_reward_func
+)
+from gin_rummy_environment_function import (
+    rollout_full_prompt_and_completion_parallelized_curriculum as gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum,
+    rollout_reward_func as gin_rummy_rollout_reward_func
 )
 
 LOCAL_RANK = int(os.getenv("LOCAL_RANK", "0"))
 STANDARD_GRPO_EXTRA_COLUMN = "extra_data"
 STANDARD_GRPO_PROMPT_COLUMN = "prompt"
+
+GAMES_TO_TASK_ID_RANGE = {
+    "goofspiel": (0, 99999999),
+    "liars_dice": (100000000, 199999999),
+    "leduc_poker": (200000000, 299999999),
+    "gin_rummy": (300000000, 399999999),
+    "othello": (400000000, 499999999),
+    "backgammon": (500000000, 599999999),
+    "hex": (600000000, 699999999),
+    "clobber": (700000000, 799999999),
+}
 
 
 @dataclass
@@ -64,6 +79,7 @@ class TrainingArguments(GRPOConfig):
     disable_action_mask: Optional[bool] = field(default=False)
     initial_max_turn: Optional[int] = field(default=2)
     rollouts_per_stage: Optional[int] = field(default=1280)
+    environment_name: Optional[str] = field(default=None)
 
 def print_trainable_parameters(model):
     """
@@ -708,7 +724,7 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    train_ds = Dataset.from_list([{"prompt": str(i)} for i in range(100000)])
+    train_ds = Dataset.from_list([{"prompt": str(i)} for i in range(GAMES_TO_TASK_ID_RANGE[training_args.environment_name][0], GAMES_TO_TASK_ID_RANGE[training_args.environment_name][1])])
     dev_ds = train_ds.select(random.sample(range(len(train_ds)), 10))
 
     log_info(f"world_size: {training_args.world_size}")
@@ -794,14 +810,22 @@ def main():
 
     # # First time rollout use default GRPO trainer
     if is_reasoning_tokenizer(tokenizer):
+        if training_args.environment_name == "goof_spiel":
+            rollout_func = goof_spiel_rollout_last_prompt_and_completion_parallelized_curriculum
+            reward_func = goof_spiel_rollout_reward_func
+        elif training_args.environment_name == "gin_rummy":
+            rollout_func = gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum
+            reward_func = gin_rummy_rollout_reward_func
+            training_args.initial_max_turn = 13
+        
         print("Training reasoning model with GRPOTrainer")
         training_args.max_completion_length = 2048
         training_args.vllm_max_model_length += 2048
         training_args.initial_max_turn = 1
         trainer = GRPOTrainer(
             model=model,
-            rollout_func=game_world_rollout_last_prompt_and_completion_parallelized_curriculum,
-            reward_funcs=[game_world_rollout_reward_func],
+            rollout_func=rollout_func,
+            reward_funcs=[reward_func],
             args=training_args,
             train_dataset=train_ds,
             eval_dataset=dev_ds,
@@ -818,13 +842,21 @@ def main():
             ],
         )
     elif training_args.disable_action_mask:
+        if training_args.environment_name == "goof_spiel":
+            rollout_func = goof_spiel_rollout_last_prompt_and_completion_parallelized_curriculum
+            reward_func = goof_spiel_rollout_reward_func
+        elif training_args.environment_name == "gin_rummy":
+            rollout_func = gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum
+            reward_func = gin_rummy_rollout_reward_func
+            training_args.initial_max_turn = 13
+        
         print("Training reasoning model with GRPOTrainer")
         training_args.max_completion_length = 16
         training_args.initial_max_turn = 1
         trainer = GRPOTrainer(
             model=model,
-            rollout_func=game_world_rollout_last_prompt_and_completion_parallelized_curriculum,
-            reward_funcs=[game_world_rollout_reward_func],
+            rollout_func=rollout_func,
+            reward_funcs=[reward_func],
             args=training_args,
             train_dataset=train_ds,
             eval_dataset=dev_ds,
@@ -841,13 +873,21 @@ def main():
             ],
         )
     else:
+        if training_args.environment_name == "goof_spiel":
+            rollout_func = goof_spiel_rollout_full_prompt_and_completion_parallelized_curriculum
+            reward_func = goof_spiel_rollout_reward_func
+        elif training_args.environment_name == "gin_rummy":
+            rollout_func = gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum
+            reward_func = gin_rummy_rollout_reward_func
+            training_args.initial_max_turn = 13
+            
         # Full prompt and completion rollout use ActionMaskedGRPOTrainer
         training_args.max_completion_length = 16
         print("Training non-reasoning model with ActionMaskedGRPOTrainer")
         trainer = ActionMaskedGRPOTrainer(
             model=model,
-            rollout_func=game_world_rollout_full_prompt_and_completion_parallelized_curriculum,
-            reward_funcs=[game_world_rollout_reward_func],
+            rollout_func=rollout_func,
+            reward_funcs=[reward_func],
             args=training_args,
             train_dataset=train_ds,
             processing_class=tokenizer,
