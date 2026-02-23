@@ -47,13 +47,11 @@ Card Values: A=1, 2-10=face value, J=11, Q=12, K=13
 
 
 # Output Format
-First, reason about your strategy inside <think> tags. Then, provide your action ID inside <answer> tags.
-
-<think>strategy reasoning here</think><answer>ACTION_ID</answer>
+You must respond with ONLY the action ID (a single number). Do NOT include descriptions or explanations.
 
 Examples:
-- If the legal actions are "52 -> Draw upcard, 53 -> Draw stock" and you want to draw from stock: <think>The upcard doesn't help my hand. Drawing from stock gives me a chance at a better card. The action id for drawing from stock is 53.</think><answer>53</answer>
-- If the legal actions are "0 -> Discard As, 5 -> Discard 6h, 12 -> Discard Kd" and you want to discard the King of diamonds: <think>The King has high deadwood value and doesn't fit any of my melds. The action id for discarding Kd is 12.</think><answer>12</answer>
+- If the legal actions are "52 -> Draw upcard, 53 -> Draw stock" and you want to draw from stock, respond "53"
+- If the legal actions are "0 -> Discard As, 5 -> Discard 6h, 12 -> Discard Kd" and you want to discard the King of diamonds, respond "12"
 '''.strip()
 
 
