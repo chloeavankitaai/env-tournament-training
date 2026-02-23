@@ -724,7 +724,16 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    train_ds = Dataset.from_list([{"prompt": str(i)} for i in range(GAMES_TO_TASK_ID_RANGE[training_args.environment_name][0], GAMES_TO_TASK_ID_RANGE[training_args.environment_name][1])])
+    # Limit to at most 200_000 samples to avoid creating too large a dataset
+    start_idx, end_idx = GAMES_TO_TASK_ID_RANGE[training_args.environment_name]
+    max_samples = 200_000
+    total_range = end_idx - start_idx
+    if total_range > max_samples:
+        # evenly sample max_samples task ids from the range
+        selected_indices = sorted(random.sample(range(start_idx, end_idx), max_samples))
+    else:
+        selected_indices = list(range(start_idx, end_idx))
+    train_ds = Dataset.from_list([{"prompt": str(i)} for i in selected_indices])
     dev_ds = train_ds.select(random.sample(range(len(train_ds)), 10))
 
     log_info(f"world_size: {training_args.world_size}")
