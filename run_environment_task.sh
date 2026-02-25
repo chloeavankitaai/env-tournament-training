@@ -134,6 +134,7 @@ for MODEL in "${MODELS[@]}"; do
     --name $TRAINING_CONTAINER_NAME \
     --ipc=host \
     -e ENVIRONMENT_SERVER_URLS="$ENVIRONMENT_SERVER_URLS" \
+    -e WANDB_TOKEN="$WANDB_TOKEN" \
     "$TRAINER_IMAGE" \
     --task-id "$TASK_ID" \
     --model "$MODEL" \
@@ -142,7 +143,8 @@ for MODEL in "${MODELS[@]}"; do
     --task-type "EnvTask" \
     --file-format "$FILE_FORMAT" \
     --hours-to-complete "$HOURS_TO_COMPLETE" \
-    --expected-repo-name "$LOCAL_EXPECTED_REPO_NAME"
+    --expected-repo-name "$LOCAL_EXPECTED_REPO_NAME" \
+    --wandb-mode "online"
 
   TRAIN_CONTAINER_STATUS=0
   
