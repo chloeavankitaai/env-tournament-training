@@ -55,6 +55,10 @@ from gin_rummy_environment_function import (
     rollout_reward_func as gin_rummy_rollout_reward_func,
     rollout_last_prompt_and_completion_parallelized_curriculum as gin_rummy_rollout_last_prompt_and_completion_parallelized_curriculum
 )
+# from liars_dice_environment_function import (
+#     rollout_full_prompt_and_completion_parallelized_curriculum as liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum,
+#     rollout_reward_func as liars_dice_rollout_reward_func,
+# )
 
 LOCAL_RANK = int(os.getenv("LOCAL_RANK", "0"))
 STANDARD_GRPO_EXTRA_COLUMN = "extra_data"
@@ -818,6 +822,9 @@ def main():
 
         max_steps = train_request.get("max_steps", -1)
         log_info(f"max_steps: {max_steps}")
+        if max_steps is not None and max_steps != -1:
+            training_args.max_steps = int(max_steps)
+            log_info(f"Applied training_args.max_steps: {training_args.max_steps}")
 
         # # First time rollout use default GRPO trainer
         if is_reasoning_tokenizer(tokenizer):
@@ -828,10 +835,16 @@ def main():
                 training_args.initial_max_turn = 1
                 trainer_class = GRPOTrainer
             elif training_args.environment_name == "gin_rummy":
-                rollout_func = gin_rummy_rollout_last_prompt_and_completion_parallelized_curriculum
+                rollout_func = gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum
                 reward_func = gin_rummy_rollout_reward_func
-                training_args.initial_max_turn = 8
+                training_args.initial_max_turn = 50
                 trainer_class = GRPOTrainer
+            # elif training_args.environment_name == "liars_dice":
+            #     rollout_func = liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum
+            #     reward_func = liars_dice_rollout_reward_func
+            #     trainer_class = GRPOTrainer
+            else:
+                raise ValueError(f"Unsupported environment_name: {training_args.environment_name}")
             
             print("Training reasoning model with GRPOTrainer")
             training_args.max_completion_length = 2048
@@ -862,10 +875,16 @@ def main():
                 training_args.initial_max_turn = 1
                 trainer_class = GRPOTrainer
             elif training_args.environment_name == "gin_rummy":
-                rollout_func = gin_rummy_rollout_last_prompt_and_completion_parallelized_curriculum
+                rollout_func = gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum
                 reward_func = gin_rummy_rollout_reward_func
-                training_args.initial_max_turn = 8
+                training_args.initial_max_turn = 50
                 trainer_class = GRPOTrainer
+            elif training_args.environment_name == "liars_dice":
+                rollout_func = liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum
+                reward_func = liars_dice_rollout_reward_func
+                trainer_class = GRPOTrainer
+            else:
+                raise ValueError(f"Unsupported environment_name: {training_args.environment_name}")
             
             print("Training reasoning model with GRPOTrainer")
             training_args.max_completion_length = 16
@@ -896,8 +915,14 @@ def main():
             elif training_args.environment_name == "gin_rummy":
                 rollout_func = gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum
                 reward_func = gin_rummy_rollout_reward_func
-                training_args.initial_max_turn = 8
+                training_args.initial_max_turn = 50
                 trainer_class = ActionMaskedGRPOTrainer
+            elif training_args.environment_name == "liars_dice":
+                rollout_func = liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum
+                reward_func = liars_dice_rollout_reward_func
+                trainer_class = ActionMaskedGRPOTrainer
+            else:
+                raise ValueError(f"Unsupported environment_name: {training_args.environment_name}")
                 
             # Full prompt and completion rollout use ActionMaskedGRPOTrainer
             training_args.max_completion_length = 16

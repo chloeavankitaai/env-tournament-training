@@ -46,7 +46,7 @@ GRPO_CONFIG = {
         "vllm_gpu_memory_utilization": 0.3,
         "use_lora": True,
         "beta": 0.01,
-        "num_generations": 4,
+        "num_generations": 8,
         "rollouts_per_stage": 1280,
     },
     "4_5_b": {
@@ -232,9 +232,9 @@ def get_run_cmd(config: dict, gpu_nums: int):
     --beta {beta} \
     --num_generations {num_generations} \
     --loss_type dr_grpo \
-    --num_iterations 1 \
+    --num_iterations 2 \
     --do_eval False \
-    --vllm_max_model_length 5248"""
+    --vllm_max_model_length 16384"""
     )
 
     if config.get("use_lora", False):
