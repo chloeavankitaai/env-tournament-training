@@ -55,10 +55,10 @@ from gin_rummy_environment_function import (
     rollout_reward_func as gin_rummy_rollout_reward_func,
     rollout_last_prompt_and_completion_parallelized_curriculum as gin_rummy_rollout_last_prompt_and_completion_parallelized_curriculum
 )
-# from liars_dice_environment_function import (
-#     rollout_full_prompt_and_completion_parallelized_curriculum as liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum,
-#     rollout_reward_func as liars_dice_rollout_reward_func,
-# )
+from liars_dice_environment_function import (
+    rollout_full_prompt_and_completion_parallelized_curriculum as liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum,
+    rollout_reward_func as liars_dice_rollout_reward_func,
+)
 
 LOCAL_RANK = int(os.getenv("LOCAL_RANK", "0"))
 STANDARD_GRPO_EXTRA_COLUMN = "extra_data"
@@ -854,10 +854,10 @@ def main():
                 reward_func = gin_rummy_rollout_reward_func
                 training_args.initial_max_turn = 50
                 trainer_class = ActionMaskedGRPOTrainer
-            # elif training_args.environment_name == "liars_dice":
-            #     rollout_func = liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum
-            #     reward_func = liars_dice_rollout_reward_func
-            #     trainer_class = GRPOTrainer
+            elif training_args.environment_name == "liars_dice":
+                rollout_func = liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum
+                reward_func = liars_dice_rollout_reward_func
+                trainer_class = ActionMaskedGRPOTrainer
             else:
                 raise ValueError(f"Unsupported environment_name: {training_args.environment_name}")
             
@@ -897,7 +897,7 @@ def main():
             elif training_args.environment_name == "liars_dice":
                 rollout_func = liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum
                 reward_func = liars_dice_rollout_reward_func
-                trainer_class = GRPOTrainer
+                trainer_class = ActionMaskedGRPOTrainer
             else:
                 raise ValueError(f"Unsupported environment_name: {training_args.environment_name}")
             
