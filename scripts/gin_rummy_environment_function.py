@@ -339,7 +339,7 @@ class RewardCalculator:
         else:
             deadwood_component = 0.0
 
-        # 2. Terminal bonus (only when game completes)
+        # 2. Terminal bonus / truncation penalty
         terminal = 0.0
         if done:
             if env_reward > 0.5:
@@ -348,10 +348,16 @@ class RewardCalculator:
                     terminal += 0.25  # gin bonus
             else:
                 terminal = -0.5
+        elif final_state:
+            # Truncated episode: penalize proportionally to remaining deadwood
+            terminal = -final_state.deadwood / 100.0
 
         # 3. Invalid action penalty (accumulated, clipped)
         invalid_total = sum(r for r in step_rewards if r < 0)
         invalid_total = max(invalid_total, -0.3)
+
+        if deadwood_component < 0.0:
+            deadwood_component *= 1.5
 
         return deadwood_component + terminal + invalid_total
     
