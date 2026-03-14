@@ -35,8 +35,6 @@ MCTS_CONFIG = {
 
 # Reward settings
 INVALID_ACTION_PENALTY = 0.10
-CHALLENGE_DECISION_BONUS = 0.05
-CHALLENGE_DECISION_PENALTY = 0.05
 PASS_MISSED_CHALLENGE_PENALTY = 0.06
 BID_PLAUSIBILITY_BONUS = 0.04
 BID_PLAUSIBILITY_PENALTY = 0.04
@@ -400,14 +398,7 @@ def _score_challenge_decision(
     current_bid_truth_probability = float(current_bid_stats["truth_probability"])
     reward = 0.0
 
-    if chose_liar:
-        if current_bid_truth_probability <= 0.22:
-            reward += CHALLENGE_DECISION_BONUS * (
-                1.0 + _clamp((0.22 - current_bid_truth_probability) / 0.22, 0.0, 1.0)
-            )
-        elif current_bid_truth_probability >= 0.60:
-            reward -= CHALLENGE_DECISION_PENALTY
-    elif proposed_bid is not None:
+    if not chose_liar and proposed_bid is not None:
         if current_bid_truth_probability <= 0.10:
             reward -= PASS_MISSED_CHALLENGE_PENALTY * (
                 1.0 + _clamp((0.10 - current_bid_truth_probability) / 0.10, 0.0, 1.0)
