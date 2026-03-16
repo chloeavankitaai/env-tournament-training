@@ -51,6 +51,20 @@ GRPO_CONFIG = {
         "rollout_warmup_rollouts": 0,
         "mcts_warmup_optimizer_steps": 20,
     },
+    "2_4_b_qwen": {
+        "lr": 1e-4,
+        "distributed": "ddp",
+        "gpu_count": 2,
+        "batch_size": 1,
+        "gradient_accumulation_steps": 16,
+        "vllm_gpu_memory_utilization": 0.3,
+        "use_lora": True,
+        "beta": 0.01,
+        "num_generations": 8,
+        "rollouts_per_stage": 1280,
+        "rollout_warmup_rollouts": 0,
+        "mcts_warmup_optimizer_steps": 20,
+    },
     "4_5_b": {
         "lr": 1e-4,
         "distributed": "ddp",
@@ -293,6 +307,8 @@ def get_training_json(train_info: dict) -> dict:
     model_architecture = get_model_architecture(model_path)
     param_nums = get_model_num_params(model_name, model_path)
     config = get_grpo_config(param_nums)
+    if model_name == "Qwen/Qwen2.5-3B-Instruct":
+        config = GRPO_CONFIG["2_4_b_qwen"]
     if model_name in ["mistralai/Mistral-7B-Instruct-v0.3", "mistralai/Mistral-7B-Instruct-v0.2"]:
         config = GRPO_CONFIG["6_9_b"]
     print(f"config: {config}")

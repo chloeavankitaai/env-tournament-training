@@ -608,7 +608,15 @@ Wild dice: 6s are WILD and count as ANY face value.
 - When counting dice for a bid, include 6s in the count
 - Example: Bid "3 fours" means at least 3 dice showing EITHER 4 OR 6
 
-Winning: If you call Liar and previous bid was false, opponent loses. If bid was true or exact, you lose."""
+Winning: If you call Liar and previous bid was false, opponent loses. If bid was true or exact, you lose.
+
+# Output Format
+You must respond with ONLY the action ID (a single number). 
+Do NOT include descriptions or explanations. 
+Examples:
+- For action "59 -> 10-6": respond "59"
+- For action "60 -> Liar": respond "60"
+"""
     if use_hints:
         system_prompt += "\n" + STRATEGY_TIPS
     return system_prompt
