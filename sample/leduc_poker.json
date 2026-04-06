@@ -1,0 +1,1038 @@
+"272340308": {
+      "task_id": 272340308,
+      "score": 0.38461538461538464,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.38461538461538464,
+        "success": false,
+        "time_taken": 0.15867376327514648,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2665\nCurrent round: 1/2\nPot size: 2 chips\nYour chips: 99\nOpponent chips: 99\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "2"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2665\nCurrent round: 1/2\nPot size: 8 chips\nYour chips: 97\nOpponent chips: 95\nRound 1 betting: Raise, Raise\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n0 -> Fold\n1 -> Call\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "0"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 5,
+              "action_str": "Chance outcome:5",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 0,
+              "action_str": "Chance outcome:0",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": true
+            },
+            {
+              "player_id": 1,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 0,
+              "action_str": "Fold",
+              "is_llm": true
+            }
+          ],
+          "observation": "[Observer: 0][Private: 5][Round 1][Player: 0][Pot: 8][Money: 97 95][Ante: 3 5]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 272340308,
+          "seed": 272340308,
+          "opponent_type": "mcts",
+          "llm_player_id": 0,
+          "final_return": -3.0,
+          "all_returns": [
+            -3.0,
+            3.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 403,
+            "total_tokens": 405,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.002019643783569336,
+            "total_mcts_calls": 1,
+            "avg_mcts_time_per_call": 0.002019643783569336,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
+    "278320464": {
+      "task_id": 278320464,
+      "score": 0.38461538461538464,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.38461538461538464,
+        "success": false,
+        "time_taken": 0.15892481803894043,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: J\u2665\nCurrent round: 1/2\nPot size: 2 chips\nYour chips: 99\nOpponent chips: 99\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "2"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: J\u2665\nPublic card: Q\u2660\nCurrent round: 2/2\nPot size: 6 chips\nYour chips: 97\nOpponent chips: 97\nRound 1 betting: Raise, Call\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "1"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 1,
+              "action_str": "Chance outcome:1",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 5,
+              "action_str": "Chance outcome:5",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": true
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 2,
+              "action_str": "Chance outcome:2",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": true
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            }
+          ],
+          "observation": "[Observer: 0][Private: 1][Round 2][Player: 1][Pot: 6][Money: 97 97][Public: 2][Ante: 3 3]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 278320464,
+          "seed": 278320464,
+          "opponent_type": "mcts",
+          "llm_player_id": 0,
+          "final_return": -3.0,
+          "all_returns": [
+            -3.0,
+            3.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 409,
+            "total_tokens": 411,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.003370046615600586,
+            "total_mcts_calls": 2,
+            "avg_mcts_time_per_call": 0.001685023307800293,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
+    "248586341": {
+      "task_id": 248586341,
+      "score": 0.6923076923076923,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.6923076923076923,
+        "success": true,
+        "time_taken": 0.15729689598083496,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2660\nCurrent round: 1/2\nPot size: 4 chips\nYour chips: 99\nOpponent chips: 97\nRound 1 betting: Raise\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n0 -> Fold\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "2"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2660\nPublic card: Q\u2665\nCurrent round: 2/2\nPot size: 10 chips\nYour chips: 95\nOpponent chips: 95\nRound 1 betting: Raise, Raise, Call\nRound 2 betting: Call\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "1"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 0,
+              "action_str": "Chance outcome:0",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 4,
+              "action_str": "Chance outcome:4",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": true
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 3,
+              "action_str": "Chance outcome:3",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": true
+            }
+          ],
+          "observation": "[Observer: 1][Private: 4][Round 2][Player: 1][Pot: 10][Money: 95 95][Public: 3][Ante: 5 5]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 248586341,
+          "seed": 248586341,
+          "opponent_type": "mcts",
+          "llm_player_id": 1,
+          "final_return": 5.0,
+          "all_returns": [
+            -5.0,
+            5.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 430,
+            "total_tokens": 432,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.0030677318572998047,
+            "total_mcts_calls": 3,
+            "avg_mcts_time_per_call": 0.0010225772857666016,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
+    "235264582": {
+      "task_id": 235264582,
+      "score": 0.38461538461538464,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.38461538461538464,
+        "success": false,
+        "time_taken": 0.15691399574279785,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: Q\u2660\nCurrent round: 1/2\nPot size: 2 chips\nYour chips: 99\nOpponent chips: 99\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "2"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: Q\u2660\nCurrent round: 1/2\nPot size: 8 chips\nYour chips: 97\nOpponent chips: 95\nRound 1 betting: Raise, Raise\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n0 -> Fold\n1 -> Call\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "0"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 2,
+              "action_str": "Chance outcome:2",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 3,
+              "action_str": "Chance outcome:3",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": true
+            },
+            {
+              "player_id": 1,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 0,
+              "action_str": "Fold",
+              "is_llm": true
+            }
+          ],
+          "observation": "[Observer: 0][Private: 2][Round 1][Player: 0][Pot: 8][Money: 97 95][Ante: 3 5]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 235264582,
+          "seed": 235264582,
+          "opponent_type": "mcts",
+          "llm_player_id": 0,
+          "final_return": -3.0,
+          "all_returns": [
+            -3.0,
+            3.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 403,
+            "total_tokens": 405,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.005625486373901367,
+            "total_mcts_calls": 1,
+            "avg_mcts_time_per_call": 0.005625486373901367,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
+    "253606629": {
+      "task_id": 253606629,
+      "score": 0.6923076923076923,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.6923076923076923,
+        "success": true,
+        "time_taken": 0.1589500904083252,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2665\nCurrent round: 1/2\nPot size: 4 chips\nYour chips: 99\nOpponent chips: 97\nRound 1 betting: Raise\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n0 -> Fold\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "2"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2665\nPublic card: Q\u2665\nCurrent round: 2/2\nPot size: 10 chips\nYour chips: 95\nOpponent chips: 95\nRound 1 betting: Raise, Raise, Call\nRound 2 betting: Call\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "1"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 0,
+              "action_str": "Chance outcome:0",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 5,
+              "action_str": "Chance outcome:5",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": true
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 3,
+              "action_str": "Chance outcome:3",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": true
+            }
+          ],
+          "observation": "[Observer: 1][Private: 5][Round 2][Player: 1][Pot: 10][Money: 95 95][Public: 3][Ante: 5 5]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 253606629,
+          "seed": 253606629,
+          "opponent_type": "mcts",
+          "llm_player_id": 1,
+          "final_return": 5.0,
+          "all_returns": [
+            -5.0,
+            5.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 430,
+            "total_tokens": 432,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.0030601024627685547,
+            "total_mcts_calls": 3,
+            "avg_mcts_time_per_call": 0.0010200341542561848,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
+    "275345556": {
+      "task_id": 275345556,
+      "score": 0.38461538461538464,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.38461538461538464,
+        "success": false,
+        "time_taken": 0.1583690643310547,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2665\nCurrent round: 1/2\nPot size: 2 chips\nYour chips: 99\nOpponent chips: 99\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "2"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2665\nPublic card: J\u2660\nCurrent round: 2/2\nPot size: 6 chips\nYour chips: 97\nOpponent chips: 97\nRound 1 betting: Raise, Call\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "1"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 5,
+              "action_str": "Chance outcome:5",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 1,
+              "action_str": "Chance outcome:1",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": true
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 0,
+              "action_str": "Chance outcome:0",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": true
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            }
+          ],
+          "observation": "[Observer: 0][Private: 5][Round 2][Player: 1][Pot: 6][Money: 97 97][Public: 0][Ante: 3 3]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 275345556,
+          "seed": 275345556,
+          "opponent_type": "mcts",
+          "llm_player_id": 0,
+          "final_return": -3.0,
+          "all_returns": [
+            -3.0,
+            3.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 409,
+            "total_tokens": 411,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.0021643638610839844,
+            "total_mcts_calls": 2,
+            "avg_mcts_time_per_call": 0.0010821819305419922,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
+    "299990729": {
+      "task_id": 299990729,
+      "score": 0.5,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.5,
+        "success": false,
+        "time_taken": 0.16261577606201172,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2660\nCurrent round: 1/2\nPot size: 4 chips\nYour chips: 99\nOpponent chips: 97\nRound 1 betting: Raise\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n0 -> Fold\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "2"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2660\nPublic card: J\u2660\nCurrent round: 2/2\nPot size: 10 chips\nYour chips: 95\nOpponent chips: 95\nRound 1 betting: Raise, Raise, Call\nRound 2 betting: Call\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "1"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 5,
+              "action_str": "Chance outcome:5",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 4,
+              "action_str": "Chance outcome:4",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": true
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 0,
+              "action_str": "Chance outcome:0",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": true
+            }
+          ],
+          "observation": "[Observer: 1][Private: 4][Round 2][Player: 1][Pot: 10][Money: 95 95][Public: 0][Ante: 5 5]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 299990729,
+          "seed": 299990729,
+          "opponent_type": "mcts",
+          "llm_player_id": 1,
+          "final_return": 0.0,
+          "all_returns": [
+            0.0,
+            0.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 430,
+            "total_tokens": 432,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.008770465850830078,
+            "total_mcts_calls": 3,
+            "avg_mcts_time_per_call": 0.0029234886169433594,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
+    "268387462": {
+      "task_id": 268387462,
+      "score": 0.38461538461538464,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.38461538461538464,
+        "success": false,
+        "time_taken": 0.13283109664916992,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: J\u2665\nCurrent round: 1/2\nPot size: 2 chips\nYour chips: 99\nOpponent chips: 99\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "2"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: J\u2665\nCurrent round: 1/2\nPot size: 8 chips\nYour chips: 97\nOpponent chips: 95\nRound 1 betting: Raise, Raise\nYour turn to act\n\nYou are Player 0.\nLegal Actions:\n0 -> Fold\n1 -> Call\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "0"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 1,
+              "action_str": "Chance outcome:1",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 4,
+              "action_str": "Chance outcome:4",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": true
+            },
+            {
+              "player_id": 1,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 0,
+              "action_str": "Fold",
+              "is_llm": true
+            }
+          ],
+          "observation": "[Observer: 0][Private: 1][Round 1][Player: 0][Pot: 8][Money: 97 95][Ante: 3 5]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 268387462,
+          "seed": 268387462,
+          "opponent_type": "mcts",
+          "llm_player_id": 0,
+          "final_return": -3.0,
+          "all_returns": [
+            -3.0,
+            3.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 403,
+            "total_tokens": 405,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.0036749839782714844,
+            "total_mcts_calls": 1,
+            "avg_mcts_time_per_call": 0.0036749839782714844,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
+    "220514015": {
+      "task_id": 220514015,
+      "score": 0.5,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.5,
+        "success": false,
+        "time_taken": 0.13298773765563965,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2660\nCurrent round: 1/2\nPot size: 4 chips\nYour chips: 99\nOpponent chips: 97\nRound 1 betting: Raise\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n0 -> Fold\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "2"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: K\u2660\nPublic card: J\u2665\nCurrent round: 2/2\nPot size: 10 chips\nYour chips: 95\nOpponent chips: 95\nRound 1 betting: Raise, Raise, Call\nRound 2 betting: Call\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "1"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 5,
+              "action_str": "Chance outcome:5",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 4,
+              "action_str": "Chance outcome:4",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 2,
+              "action_str": "Raise",
+              "is_llm": true
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 1,
+              "action_str": "Chance outcome:1",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": true
+            }
+          ],
+          "observation": "[Observer: 1][Private: 4][Round 2][Player: 1][Pot: 10][Money: 95 95][Public: 1][Ante: 5 5]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 220514015,
+          "seed": 220514015,
+          "opponent_type": "mcts",
+          "llm_player_id": 1,
+          "final_return": 0.0,
+          "all_returns": [
+            0.0,
+            0.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 430,
+            "total_tokens": 432,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.007359504699707031,
+            "total_mcts_calls": 3,
+            "avg_mcts_time_per_call": 0.0024531682332356772,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
+    "206323853": {
+      "task_id": 206323853,
+      "score": 0.5384615384615384,
+      "error": null,
+      "full_result": {
+        "task_name": "openspiel:leduc_poker",
+        "score": 0.5384615384615384,
+        "success": true,
+        "time_taken": 0.1335921287536621,
+        "extra": {
+          "conversation": [
+            {
+              "role": "system",
+              "content": "You are playing leduc_poker.\n\n# Game Rules\nLEDUC POKER RULES:\n\nDeck: 2 suits \u00d7 (num_players + 1) ranks. For 2 players: 6 cards (J\u2660 J\u2665 Q\u2660 Q\u2665 K\u2660 K\u2665).\n\nSetup: Each player starts with 100 chips, pays 1 ante. Two rounds of betting.\n\nRound 1: Each player receives one private card. Actions: Fold (lose ante), Call/Check (match current bet), Raise (add 2 chips to bet). Maximum 2 raises per round.\nRound 2: One public card is revealed. Same actions, but Raise adds 4 chips.\n\nWinning: Player with best hand wins pot (or last remaining if others fold).\nHand ranking (high to low): Pair (private + public match) > High card value (K > Q > J).\n\n\n\n# Output Format\nYou must respond with ONLY the action ID (a single number).\nDo NOT include descriptions or explanations.\n\nExamples:\n- For action \"0 -> roll\": respond \"0\"\n- For action \"89 -> a3\": respond \"89\""
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: J\u2665\nCurrent round: 1/2\nPot size: 2 chips\nYour chips: 99\nOpponent chips: 99\nRound 1 betting: Call\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "1"
+            },
+            {
+              "role": "user",
+              "content": "Current State:\nYour card: J\u2665\nPublic card: J\u2660\nHand: Pair\nCurrent round: 2/2\nPot size: 2 chips\nYour chips: 99\nOpponent chips: 99\nRound 1 betting: Call, Call\nRound 2 betting: Call\nYour turn to act\n\nYou are Player 1.\nLegal Actions:\n1 -> Call\n2 -> Raise\n\nYour choice (ID only):"
+            },
+            {
+              "role": "assistant",
+              "content": "1"
+            }
+          ],
+          "action_history": [
+            {
+              "player_id": -1,
+              "action": 4,
+              "action_str": "Chance outcome:4",
+              "is_llm": false
+            },
+            {
+              "player_id": -1,
+              "action": 1,
+              "action_str": "Chance outcome:1",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": true
+            },
+            {
+              "player_id": -1,
+              "action": 0,
+              "action_str": "Chance outcome:0",
+              "is_llm": false
+            },
+            {
+              "player_id": 0,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": false
+            },
+            {
+              "player_id": 1,
+              "action": 1,
+              "action_str": "Call",
+              "is_llm": true
+            }
+          ],
+          "observation": "[Observer: 1][Private: 1][Round 2][Player: 1][Pot: 2][Money: 99 99][Public: 0][Ante: 1 1]",
+          "task_type": "leduc_poker",
+          "game_name": "leduc_poker",
+          "task_id": 206323853,
+          "seed": 206323853,
+          "opponent_type": "mcts",
+          "llm_player_id": 1,
+          "final_return": 1.0,
+          "all_returns": [
+            -1.0,
+            1.0
+          ],
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 427,
+            "total_tokens": 429,
+            "completion_tokens_details": null,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0
+          },
+          "mcts_timing": {
+            "total_mcts_time": 0.00484013557434082,
+            "total_mcts_calls": 2,
+            "avg_mcts_time_per_call": 0.00242006778717041,
+            "num_mcts_bots": 1
+          }
+        }
+      }
+    },
