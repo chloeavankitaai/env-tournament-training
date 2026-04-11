@@ -28,9 +28,6 @@ import lr_utils
 import train_cst
 import training_paths as train_paths
 from core.models.utility_models import TaskType
-from dpo_config import get_training_json as get_dpo_training_json
-from grpo_config import get_training_json as get_grpo_training_json
-from instruct_config import get_training_json as get_instruct_training_json
 from grpo_env_config import get_training_json as get_env_training_json
 from transformers import AutoConfig
 
@@ -246,16 +243,6 @@ def delete_poor_checkpoints(train_runs: list[dict]):
                 shutil.rmtree(run["output_dir"])
 
 
-def get_log_scale(task_type: str):
-    log_scale_map = {
-        TaskType.INSTRUCTTEXTTASK.value: 0.18,
-        TaskType.DPOTASK.value: 0.18,
-        TaskType.GRPOTASK.value: 0.2,
-        TaskType.CHATTASK.value: 0.18,
-    }
-    return log_scale_map[task_type]
-
-
 def main():
     print("---STARTING TEXT TRAINING SCRIPT---", flush=True)
     parser = argparse.ArgumentParser(description="Text Model Training Script")
@@ -270,7 +257,7 @@ def main():
     parser.add_argument(
         "--task-type",
         required=True,
-        choices=["InstructTextTask", "DpoTask", "GrpoTask", "ChatTask", "EnvTask"],
+        choices=["EnvTask"],
         help="Type of task",
     )
     parser.add_argument(
@@ -408,41 +395,12 @@ def main():
         "checking_mode": "first_time",
     }
 
-    if (
-        args.task_type == TaskType.INSTRUCTTEXTTASK.value
-        or args.task_type == TaskType.CHATTASK.value
-    ):
-        train_info = get_instruct_training_json(train_info)
-        tokenize_cmd = (
-            f"/workspace/axo_py/bin/python tokenize_instruct.py {request_path}"
-        )
-        train_cmd = train_info["run_cmd"]
-
-    elif args.task_type == TaskType.DPOTASK.value:
-        train_info = get_dpo_training_json(train_info)
-        tokenize_cmd = f"python tokenize_dpo.py {request_path}"
-        train_cmd = train_info["run_cmd"]
-
-    elif args.task_type == TaskType.GRPOTASK.value:
-        train_info = get_grpo_training_json(train_info)
-        tokenize_cmd = f"python tokenize_grpo.py {request_path}"
-        train_cmd = train_info["run_cmd"]
-
-    elif args.task_type == TaskType.ENVIRONMENTTASK.value:
-        train_info = get_env_training_json(train_info)
-        tokenize_cmd = ""
-        train_cmd = train_info["run_cmd"]
-    else:
-        raise ValueError(f"Task type {args.task_type} not supported")
+    train_info = get_env_training_json(train_info)
+    train_cmd = train_info["run_cmd"]
 
     
     with open(request_path, "w") as f:
         json.dump(train_info, f, indent=4, ensure_ascii=False)
-
-    if not args.task_type == TaskType.ENVIRONMENTTASK.value:
-        run_cmd_with_log(
-            tokenize_cmd, os.path.join(ds_folder, f"tokenize_{args.task_id}.log")
-        )
 
     original_train_cmd = train_cmd
     train_success = False
@@ -460,8 +418,8 @@ def main():
         train_cmd = original_train_cmd  # will replace based on the state later
         c_train_info = copy.deepcopy(train_info)
         final_output_dir = None
-        if args.task_type == TaskType.GRPOTASK.value or args.task_type == TaskType.ENVIRONMENTTASK.value:
-            state["mode"] = "finish" # do not run this for GRPO task
+        if args.task_type == TaskType.ENVIRONMENTTASK.value:
+            state["mode"] = "finish" # do not loop for env tasks
             c_train_info["train_request"]["checking_mode"] = "none"
         else:
             if state["mode"] == "initial":

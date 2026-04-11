@@ -193,7 +193,7 @@ Desktop.ini
 
 # Logs
 *.log
-logs/
+# logs/
 
 # Model files and checkpoints
 *.pth
@@ -230,3 +230,5 @@ scripts/test_data
 eval_results/
 outputs/
 secure_checkpoints/
+
+*.ps1
