@@ -4,6 +4,8 @@
 
 ---
 
+All of the code in this branch **HAS NOT BEEN TESTED**.
+
 ## What this is
 
 GRPIO is a distributed LLM fine-tuning framework focused on **GRPO-Env** — reinforcement learning in interactive game environments. This branch adds an *autoresearch* workflow on top of that foundation: a structured loop where an LLM agent proposes, implements, trains, evaluates, and keeps or reverts experiments automatically.
@@ -11,6 +13,12 @@ GRPIO is a distributed LLM fine-tuning framework focused on **GRPO-Env** — rei
 The target metric is `avg_score` — win rate against an MCTS opponent (0.0–1.0, higher is better).
 
 Currently active games: **Liar's Dice**, **Gin Rummy**, and **Leduc Poker**.
+
+---
+
+## TODO
+- [ ] End-to-end test
+- [ ] Real-time UI
 
 ---
 
