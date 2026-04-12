@@ -56,6 +56,14 @@ FILE_FORMAT="s3"
 HOURS_TO_COMPLETE=3
 PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
 
+# --- Post-training evaluation config ---
+# Set to "0" to skip evaluation after training.
+RUN_EVAL_AFTER_TRAINING=1
+# Number of evaluation games. Defaults to 200 (same as manual_environment_eval.py).
+EVAL_NUM_EVALS=200
+# Number of GPUs for SGLang inference during eval (can differ from training GPUs).
+EVAL_NUM_GPUS=2
+
 # For uploading the outputs
 HUGGINGFACE_TOKEN=""
 WANDB_TOKEN=""
@@ -72,6 +80,12 @@ mkdir -p "$OUTPUTS_DIR"
 chmod 777 "$OUTPUTS_DIR"
 mkdir -p "$LOGS_DIR"
 chmod 777 "$LOGS_DIR"
+
+GAME_TO_EVAL=$(python3 -c "import json; print(json.loads('''$DATASET_TYPE''').get('environment_name', ''))" 2>/dev/null || echo "")
+if [ -z "$GAME_TO_EVAL" ]; then
+  echo "Warning: Could not extract environment_name from DATASET_TYPE — post-training eval will be skipped."
+  RUN_EVAL_AFTER_TRAINING=0
+fi
 
 # Create Docker network if it doesn't exist (needed for environment servers and trainer)
 docker network create agent_eval_net 2>/dev/null || true
@@ -99,6 +113,14 @@ if [ -f "$URLS_FILE" ]; then
 else
   echo "Error: Failed to get environment server URLs" >&2
   exit 1
+fi
+
+if command -v python3 >/dev/null 2>&1; then
+  PYTHON_BIN="python3"
+elif command -v python >/dev/null 2>&1; then
+  PYTHON_BIN="python"
+else
+  PYTHON_BIN=""
 fi
 
 # Loop through each model
@@ -188,13 +210,8 @@ for MODEL in "${MODELS[@]}"; do
 
     UPLOAD_SCRIPT="./trainer/utils/hf_upload.py"
     if [ -f "$UPLOAD_SCRIPT" ]; then
-      if command -v python3 >/dev/null 2>&1; then
-        PYTHON_BIN="python3"
-      elif command -v python >/dev/null 2>&1; then
-        PYTHON_BIN="python"
-      else
+      if [ -z "$PYTHON_BIN" ]; then
         echo "No python interpreter found for upload. Skipping upload."
-        PYTHON_BIN=""
       fi
 
       if [ -n "$PYTHON_BIN" ]; then
@@ -213,7 +230,39 @@ for MODEL in "${MODELS[@]}"; do
   else
     echo "Output folder not found: $LOCAL_FOLDER. Skipping upload."
   fi
-  
+
+  ###############################
+  # Post-training evaluation     #
+  ###############################
+  if [ "${RUN_EVAL_AFTER_TRAINING}" != "0" ]; then
+    echo "=========================================="
+    echo "Starting post-training evaluation for: $MODEL"
+    echo "  Game: $GAME_TO_EVAL | Evals: $EVAL_NUM_EVALS"
+    echo "=========================================="
+
+    # Find the latest checkpoint directory produced by training
+    LATEST_CHECKPOINT=$(ls -d "$LOCAL_FOLDER"/checkpoint-* 2>/dev/null | sort -t- -k2 -n | tail -1)
+
+    if [ -z "$LATEST_CHECKPOINT" ]; then
+      echo "Warning: No checkpoint found in $LOCAL_FOLDER — skipping evaluation."
+    elif [ -z "$PYTHON_BIN" ]; then
+      echo "No python interpreter found — skipping evaluation."
+    else
+      echo "Using checkpoint: $LATEST_CHECKPOINT"
+      EVAL_LOG_FILE="$LOGS_DIR/eval_${MODEL_SAFE}_${TIMESTAMP}.log"
+      echo "Logging eval output to: $EVAL_LOG_FILE"
+
+      BASE_MODEL_NAME="$MODEL" \
+      LOCAL_LORA_PATH="$LATEST_CHECKPOINT" \
+      GAME_TO_EVAL="$GAME_TO_EVAL" \
+      NUM_EVALS="$EVAL_NUM_EVALS" \
+      NUM_GPUS="$EVAL_NUM_GPUS" \
+      "$PYTHON_BIN" "$SCRIPT_DIR/manual_environment_eval.py" 2>&1 | tee "$EVAL_LOG_FILE"
+
+      echo "Evaluation complete. Log saved to: $EVAL_LOG_FILE"
+    fi
+  fi
+
   echo "=========================================="
   echo "Completed training for model: $MODEL"
   echo "Log saved to: $LOG_FILE"

@@ -44,40 +44,39 @@ from alf_world_environment_functions import (
     alfworld_rollout_first_prompt_and_completion_parallelized, alfworld_rollout_full_prompt_and_completion_parallelized,
     alfworld_rollout_reward_func
 )
-from goof_spiel_environment_function import (
-    rollout_first_prompt_and_completion as goof_spiel_rollout_first_prompt_and_completion,
-    rollout_last_prompt_and_completion_parallelized_curriculum as goof_spiel_rollout_last_prompt_and_completion_parallelized_curriculum,
-    rollout_full_prompt_and_completion_parallelized_curriculum as goof_spiel_rollout_full_prompt_and_completion_parallelized_curriculum,
-    rollout_reward_func as goof_spiel_rollout_reward_func
+from game_envs import (
+    GAME_TO_TASK_ID_RANGE as GAMES_TO_TASK_ID_RANGE_REGISTRY,
+    get_game_environment,
+    get_rollout_funcs,
 )
-from gin_rummy_environment_function import (
-    rollout_full_prompt_and_completion_parallelized_curriculum as gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum,
-    rollout_reward_func as gin_rummy_rollout_reward_func,
-    rollout_last_prompt_and_completion_parallelized_curriculum as gin_rummy_rollout_last_prompt_and_completion_parallelized_curriculum
-)
-from liars_dice_environment_function import (
-    rollout_full_prompt_and_completion_parallelized_curriculum as liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum,
-    rollout_reward_func as liars_dice_rollout_reward_func,
-)
-from leduc_poker_environment_function import (
-    rollout_full_prompt_and_completion_parallelized_curriculum as leduc_poker_rollout_full_prompt_and_completion_parallelized_curriculum,
-    rollout_reward_func as leduc_poker_rollout_reward_func,
-)
+
+
+# Per-game ``initial_max_turn`` overrides for the training config. These are
+# training concerns (they pin the starting curriculum stage) rather than game
+# rules, so they live here instead of in the game classes.
+_INITIAL_MAX_TURN_OVERRIDES: dict[str, int] = {
+    "goof_spiel": 1,
+    "gin_rummy": 50,
+    "leduc_poker": 8,
+}
+
+
+def _resolve_game_rollout_funcs(environment_name: str, use_last_variant: bool):
+    """Return ``(rollout_func, reward_func)`` for the given environment name.
+
+    ``use_last_variant=True`` selects the last-prompt/completion rollout
+    (used by reasoning tokenizers and the goof_spiel strategy-forcing path);
+    otherwise the full-prompt/completion variant is returned.
+    """
+    game = get_game_environment(environment_name)
+    rollout_full, rollout_last, reward_func = get_rollout_funcs(game)
+    return (rollout_last if use_last_variant else rollout_full), reward_func
 
 LOCAL_RANK = int(os.getenv("LOCAL_RANK", "0"))
 STANDARD_GRPO_EXTRA_COLUMN = "extra_data"
 STANDARD_GRPO_PROMPT_COLUMN = "prompt"
 
-GAMES_TO_TASK_ID_RANGE = {
-    "goofspiel": (0, 99999999),
-    "liars_dice": (100000000, 199999999),
-    "leduc_poker": (200000000, 299999999),
-    "gin_rummy": (300000000, 399999999),
-    "othello": (400000000, 499999999),
-    "backgammon": (500000000, 599999999),
-    "hex": (600000000, 699999999),
-    "clobber": (700000000, 799999999),
-}
+GAMES_TO_TASK_ID_RANGE = GAMES_TO_TASK_ID_RANGE_REGISTRY
 
 
 @dataclass
@@ -852,30 +851,28 @@ def main():
                 f"{training_args.vllm_importance_sampling_mode}"
             )
 
-        # # First time rollout use default GRPO trainer
-        if is_reasoning_tokenizer(tokenizer):
-            print("Training reasoning tokenizer model")
-            if training_args.environment_name == "goof_spiel":
-                rollout_func = goof_spiel_rollout_last_prompt_and_completion_parallelized_curriculum
-                reward_func = goof_spiel_rollout_reward_func
-                training_args.initial_max_turn = 1
-                trainer_class = GRPOTrainer
-            elif training_args.environment_name == "gin_rummy":
-                rollout_func = gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = gin_rummy_rollout_reward_func
-                training_args.initial_max_turn = 50
-                trainer_class = ActionMaskedGRPOTrainer
-            elif training_args.environment_name == "liars_dice":
-                rollout_func = liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = liars_dice_rollout_reward_func
-                trainer_class = ActionMaskedGRPOTrainer
-            elif training_args.environment_name == "leduc_poker":
-                rollout_func = leduc_poker_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = leduc_poker_rollout_reward_func
-                training_args.initial_max_turn = 8
-                trainer_class = ActionMaskedGRPOTrainer
-            else:
-                raise ValueError(f"Unsupported environment_name: {training_args.environment_name}")
+        # --- Resolve rollout/reward functions from the game_envs registry ---
+        env_name = training_args.environment_name
+        is_reasoning = is_reasoning_tokenizer(tokenizer)
+
+        # Apply per-game initial_max_turn override (training concern, not game rule)
+        if env_name in _INITIAL_MAX_TURN_OVERRIDES:
+            training_args.initial_max_turn = _INITIAL_MAX_TURN_OVERRIDES[env_name]
+
+        eval_save_callback = GRPOCustomEvalSaveCallback(
+            WhenToEvalHandler(train_request["end_time"], train_request["save_before_remaining_time"], periodic_save_steps=periodic_save_steps, steps_per_epoch=total_steps_per_epoch, max_steps=max_steps),
+            train_request["submission_dir"],
+            training_args.output_dir,
+            train_request["model_name"],
+            max_steps
+        )
+
+        if is_reasoning:
+            # Reasoning tokenizers: goof_spiel uses last-prompt (strategy forcing),
+            # everything else uses full-prompt with action masking.
+            use_last = (env_name == "goof_spiel")
+            rollout_func, reward_func = _resolve_game_rollout_funcs(env_name, use_last)
+            trainer_class = GRPOTrainer if use_last else ActionMaskedGRPOTrainer
 
             print(f"Training reasoning model with {trainer_class.__name__}")
             training_args.max_completion_length = 2048
@@ -889,40 +886,17 @@ def main():
                 eval_dataset=dev_ds,
                 processing_class=tokenizer,
                 peft_config=peft_config,
-                callbacks=[
-                    GRPOCustomEvalSaveCallback(
-                        WhenToEvalHandler(train_request["end_time"], train_request["save_before_remaining_time"], periodic_save_steps=periodic_save_steps, steps_per_epoch=total_steps_per_epoch, max_steps=max_steps),
-                        train_request["submission_dir"],
-                        training_args.output_dir,
-                        train_request["model_name"],
-                        max_steps
-                    )
-                ],
+                callbacks=[eval_save_callback],
             )
         elif training_args.disable_action_mask:
-            if training_args.environment_name == "goof_spiel":
-                rollout_func = goof_spiel_rollout_last_prompt_and_completion_parallelized_curriculum
-                reward_func = goof_spiel_rollout_reward_func
-                training_args.initial_max_turn = 1
+            use_last = (env_name == "goof_spiel")
+            rollout_func, reward_func = _resolve_game_rollout_funcs(env_name, use_last)
+            if env_name in ("goof_spiel", "gin_rummy"):
                 trainer_class = GRPOTrainer
-            elif training_args.environment_name == "gin_rummy":
-                rollout_func = gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = gin_rummy_rollout_reward_func
-                training_args.initial_max_turn = 50
-                trainer_class = GRPOTrainer
-            elif training_args.environment_name == "liars_dice":
-                rollout_func = liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = liars_dice_rollout_reward_func
-                trainer_class = ActionMaskedGRPOTrainer
-            elif training_args.environment_name == "leduc_poker":
-                rollout_func = leduc_poker_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = leduc_poker_rollout_reward_func
-                training_args.initial_max_turn = 8
-                trainer_class = ActionMaskedGRPOTrainer
             else:
-                raise ValueError(f"Unsupported environment_name: {training_args.environment_name}")
+                trainer_class = ActionMaskedGRPOTrainer
 
-            print("Training reasoning model with GRPOTrainer")
+            print(f"Training with {trainer_class.__name__} (action mask disabled)")
             training_args.max_completion_length = 16
             trainer = trainer_class(
                 model=model,
@@ -933,42 +907,15 @@ def main():
                 eval_dataset=dev_ds,
                 processing_class=tokenizer,
                 peft_config=peft_config,
-                callbacks=[
-                    GRPOCustomEvalSaveCallback(
-                        WhenToEvalHandler(train_request["end_time"], train_request["save_before_remaining_time"], periodic_save_steps=periodic_save_steps, steps_per_epoch=total_steps_per_epoch, max_steps=max_steps),
-                        train_request["submission_dir"],
-                        training_args.output_dir,
-                        train_request["model_name"],
-                        max_steps
-                    )
-                ],
+                callbacks=[eval_save_callback],
             )
         else:
-            if training_args.environment_name == "goof_spiel":
-                rollout_func = goof_spiel_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = goof_spiel_rollout_reward_func
-                trainer_class = ActionMaskedGRPOTrainer
-            elif training_args.environment_name == "gin_rummy":
-                rollout_func = gin_rummy_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = gin_rummy_rollout_reward_func
-                training_args.initial_max_turn = 50
-                trainer_class = ActionMaskedGRPOTrainer
-            elif training_args.environment_name == "liars_dice":
-                rollout_func = liars_dice_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = liars_dice_rollout_reward_func
-                trainer_class = ActionMaskedGRPOTrainer
-            elif training_args.environment_name == "leduc_poker":
-                rollout_func = leduc_poker_rollout_full_prompt_and_completion_parallelized_curriculum
-                reward_func = leduc_poker_rollout_reward_func
-                training_args.initial_max_turn = 8
-                trainer_class = ActionMaskedGRPOTrainer
-            else:
-                raise ValueError(f"Unsupported environment_name: {training_args.environment_name}")
+            rollout_func, reward_func = _resolve_game_rollout_funcs(env_name, use_last_variant=False)
+            trainer_class = ActionMaskedGRPOTrainer
 
-            # Full prompt and completion rollout use ActionMaskedGRPOTrainer
             training_args.max_completion_length = 16
             print("Training non-reasoning model with ActionMaskedGRPOTrainer")
-            trainer = ActionMaskedGRPOTrainer(
+            trainer = trainer_class(
                 model=model,
                 rollout_func=rollout_func,
                 reward_funcs=[reward_func],
@@ -976,15 +923,7 @@ def main():
                 train_dataset=train_ds,
                 processing_class=tokenizer,
                 peft_config=peft_config,
-                callbacks=[
-                    GRPOCustomEvalSaveCallback(
-                        WhenToEvalHandler(train_request["end_time"], train_request["save_before_remaining_time"], periodic_save_steps=periodic_save_steps, steps_per_epoch=total_steps_per_epoch, max_steps=max_steps),
-                        train_request["submission_dir"],
-                        training_args.output_dir,
-                        train_request["model_name"],
-                        max_steps
-                    )
-                ],
+                callbacks=[eval_save_callback],
             )
 
         trainer.train()
