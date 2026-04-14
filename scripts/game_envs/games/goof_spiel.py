@@ -190,8 +190,7 @@ class GoofSpielEnvironment(GameEnvironment):
         if not legal_action_map:
             return ""
         cleaned = remove_reasoning_tags(completion_text or "")
-        if cleaned.endswith("</s>"):
-            cleaned = cleaned[:-5]
+        cleaned = cleaned.removesuffix("</s>")
         if "Action:" in cleaned:
             cleaned = cleaned.split("Action:")[-1].strip()
 

@@ -360,8 +360,7 @@ class GinRummyEnvironment(GameEnvironment):
         # the id against the legal map (it let the env reject it), but we do
         # validate here so the engine can fall back when the model hallucinates.
         cleaned = remove_reasoning_tags(completion_text or "")
-        if cleaned.endswith("</s>"):
-            cleaned = cleaned[:-5]
+        cleaned = cleaned.removesuffix("</s>")
         if "Action:" in cleaned:
             cleaned = cleaned.split("Action:")[-1].strip()
 
