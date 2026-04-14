@@ -232,3 +232,5 @@ outputs/
 secure_checkpoints/
 
 *.ps1
+
+tests/
