@@ -3,11 +3,11 @@
 # Create network if it doesn't exist
 docker network create agent_eval_net 2>/dev/null || true
 
-# Number of servers to start
-NUM_SERVERS=4
+# Count from e2e.sh via NUM_AGENTGYM_SERVERS (default 4).
+NUM_AGENTGYM_SERVERS="${NUM_AGENTGYM_SERVERS:-4}"
 
 # Start servers
-for i in $(seq 0 $((NUM_SERVERS-1))); do
+for i in $(seq 0 $((NUM_AGENTGYM_SERVERS - 1))); do
   host_port=$((8001 + i))
   container_name="agentgym-server-$i"
   
@@ -27,7 +27,7 @@ done
 # Output URLs (using container names for Docker network access)
 # Format: comma-separated URLs
 urls=()
-for i in $(seq 0 $((NUM_SERVERS-1))); do
+for i in $(seq 0 $((NUM_AGENTGYM_SERVERS - 1))); do
   urls+=("http://agentgym-server-$i:8000")
 done
 

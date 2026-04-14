@@ -60,6 +60,12 @@ _INITIAL_MAX_TURN_OVERRIDES: dict[str, int] = {
     "leduc_poker": 8,
 }
 
+_DEFAULT_MAX_STEPS: dict[str, int] = {
+    "liars_dice": 900,
+    "gin_rummy": 300,
+    "leduc_poker": 900,
+}
+
 
 def _resolve_game_rollout_funcs(environment_name: str, use_last_variant: bool):
     """Return ``(rollout_func, reward_func)`` for the given environment name.
@@ -826,16 +832,10 @@ def main():
         print("train_ds.column_names: ", train_ds.column_names)
 
         requested_max_steps = train_request.get("max_steps", -1)
-        if requested_max_steps is not None and requested_max_steps != -1:
+        if requested_max_steps != -1:
             max_steps = requested_max_steps
-        elif training_args.environment_name == "liars_dice":
-            max_steps = 900
-        elif training_args.environment_name == "gin_rummy":
-            max_steps = 300
-        elif training_args.environment_name == "leduc_poker":
-            max_steps = 900
         else:
-            max_steps = -1
+            max_steps = _DEFAULT_MAX_STEPS.get(training_args.environment_name, -1)
         log_info(f"max_steps: {max_steps}")
         if max_steps is not None and max_steps != -1:
             training_args.max_steps = int(max_steps)

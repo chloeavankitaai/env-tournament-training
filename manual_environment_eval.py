@@ -13,11 +13,11 @@ from huggingface_hub import snapshot_download
 # lora_hf_id and local_lora_path are mutually exclusive — set the unused one to None.
 model_list = [
     # ("codellama/CodeLlama-7b-Instruct-hf", None, None),
-    ("mistralai/Mistral-7B-Instruct-v0.2", "iamPi/leduc_poker-v1.4.0-test_mistralai_Mistral-7B-Instruct-v0.2", None),
-    ("NousResearch/Hermes-3-Llama-3.2-3B", "iamPi/leduc_poker-v1.4.0-test_NousResearch_Hermes-3-Llama-3.2-3B", None),
+    # ("mistralai/Mistral-7B-Instruct-v0.2", "iamPi/leduc_poker-v1.4.0-test_mistralai_Mistral-7B-Instruct-v0.2", None),
+    # ("NousResearch/Hermes-3-Llama-3.2-3B", "iamPi/leduc_poker-v1.4.0-test_NousResearch_Hermes-3-Llama-3.2-3B", None),
     # ("Qwen/Qwen2.5-3B-Instruct", None, None),
-    ("Qwen/Qwen2.5-7B-Instruct", "iamPi/leduc_poker-v1.4.0-test_Qwen_Qwen2.5-7B-Instruct", None),
-    ("Qwen/Qwen2-7B-Instruct", "iamPi/leduc_poker-v1.4.0-test_Qwen_Qwen2-7B-Instruct", None),
+    # ("Qwen/Qwen2.5-7B-Instruct", "iamPi/leduc_poker-v1.4.0-test_Qwen_Qwen2.5-7B-Instruct", None),
+    # ("Qwen/Qwen2-7B-Instruct", "iamPi/leduc_poker-v1.4.0-test_Qwen_Qwen2-7B-Instruct", None),
     # ("unsloth/Llama-3.2-3B-Instruct", "iamPi/leduc_poker-v1.5.1-test_unsloth_Llama-3.2-3B-Instruct", None),
     # ("mistralai/Mistral-7B-Instruct-v0.3", None, "outputs/1/checkpoint-100"),
 ]
@@ -42,6 +42,7 @@ TEMPERATURE = float(os.environ.get("TEMPERATURE", "0.0"))
 RANDOM_SEED = int(os.environ.get("RANDOM_SEED", "42"))
 NUM_CONCURRENT_EVAL_WORKERS = int(os.environ.get("NUM_CONCURRENT_EVAL_WORKERS", "10"))
 NUM_AGENTGYM_SERVERS = int(os.environ.get("NUM_AGENTGYM_SERVERS", "10"))  # Number of parallel agentgym server instances
+REUSE_AGENTGYM_SERVERS = os.environ.get("REUSE_AGENTGYM_SERVERS", "0") == "1"
 
 # Number of GPUs for SGLang (env: NUM_GPUS). Uses tensor parallelism when > 1.
 NUM_GPUS = int(os.environ.get("NUM_GPUS", "2"))
@@ -197,20 +198,21 @@ def run_evaluation():
         )
         containers['sglang'] = sglang
 
-        print(f"🚀 Starting {NUM_AGENTGYM_SERVERS} AgentGym Server(s)...")
-        agentgym_ports = []
-        for i in range(NUM_AGENTGYM_SERVERS):
-            port = 8001 + i
-            agent = client.containers.run(
-                AGENTGYM_IMAGE,
-                name=f"agentgym-server-{i}",
-                detach=True,
-                network=NETWORK_NAME,
-                ports={'8000/tcp': port}
-            )
-            containers[f'agent-{i}'] = agent
-            agentgym_ports.append(port)
-            print(f"  ✓ AgentGym server {i+1}/{NUM_AGENTGYM_SERVERS} on port {port}")
+        agentgym_ports = [8001 + i for i in range(NUM_AGENTGYM_SERVERS)]
+        if REUSE_AGENTGYM_SERVERS:
+            print(f"Reusing {NUM_AGENTGYM_SERVERS} existing AgentGym server(s) on ports {agentgym_ports[0]}–{agentgym_ports[-1]}")
+        else:
+            print(f"🚀 Starting {NUM_AGENTGYM_SERVERS} AgentGym Server(s)...")
+            for i, port in enumerate(agentgym_ports):
+                agent = client.containers.run(
+                    AGENTGYM_IMAGE,
+                    name=f"agentgym-server-{i}",
+                    detach=True,
+                    network=NETWORK_NAME,
+                    ports={'8000/tcp': port}
+                )
+                containers[f'agent-{i}'] = agent
+                print(f"  ✓ AgentGym server {i+1}/{NUM_AGENTGYM_SERVERS} on port {port}")
 
         # 2. Wait for Readiness
         print("⏳ Waiting for SGLang health check...")
@@ -349,6 +351,8 @@ def run_evaluation():
     finally:
         print("🧹 Cleaning up containers...")
         for name, c in containers.items():
+            if REUSE_AGENTGYM_SERVERS and name.startswith('agent-'):
+                continue  # caller owns the agentgym container lifecycle
             try:
                 c.remove(force=True)
                 print(f"  ✓ Removed {name}")

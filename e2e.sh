@@ -1,28 +1,13 @@
 #!/bin/bash
 
-# Default GPU configuration (use all GPUs if not specified)
-GPUS="all"
-
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -g|--gpus)
-      GPUS="$2"
-      shift 2
-      ;;
     -h|--help)
       echo "Usage: $0 [OPTIONS]"
       echo ""
       echo "Options:"
-      echo "  -g, --gpus GPU_IDS    Specify which GPUs to use (default: 'all')"
-      echo "                        Examples: 'all', '0', '0,1', '\"device=0,1\"'"
       echo "  -h, --help            Show this help message"
-      echo ""
-      echo "Examples:"
-      echo "  $0                    # Use all available GPUs"
-      echo "  $0 -g 0               # Use only GPU 0"
-      echo "  $0 -g 0,1             # Use GPUs 0 and 1"
-      echo "  $0 --gpus '\"device=0,2\"'  # Use GPUs 0 and 2 (quoted for Docker)"
       exit 0
       ;;
     *)
@@ -38,10 +23,10 @@ TASK_ID="1"
 # List of models to test (add or remove models as needed)
 MODELS=(
   # "unsloth/Llama-3.2-3B-Instruct"
-  # "Qwen/Qwen3-4B-Instruct-2507"
+  "Qwen/Qwen3-4B-Instruct-2507"
   # "mistralai/Mistral-7B-Instruct-v0.3"
   # "mistralai/Mistral-7B-Instruct-v0.2"
-  # "Qwen/Qwen2.5-3B-Instruct"
+  "Qwen/Qwen2.5-3B-Instruct"
   # "Qwen/Qwen2.5-7B-Instruct"
   # "Qwen/Qwen2-7B-Instruct"
   # "codellama/CodeLlama-7b-Instruct-hf"
@@ -53,16 +38,19 @@ DATASET_TYPE='{
   "environment_name": "liars_dice"
 }'
 FILE_FORMAT="s3"
-HOURS_TO_COMPLETE=3
+HOURS_TO_COMPLETE=1
 PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
 
 # --- Post-training evaluation config ---
 # Set to "0" to skip evaluation after training.
 RUN_EVAL_AFTER_TRAINING=1
-# Number of evaluation games. Defaults to 200 (same as manual_environment_eval.py).
-EVAL_NUM_EVALS=200
+# Number of evaluation games. Defaults to 200.
+EVAL_NUM_EVALS=20
 # Number of GPUs for SGLang inference during eval (can differ from training GPUs).
-EVAL_NUM_GPUS=2
+EVAL_NUM_GPUS=1
+# Parallel AgentGym (MCTS API) containers for training rollouts and post-training eval (same count).
+NUM_AGENTGYM_SERVERS=10
+export NUM_AGENTGYM_SERVERS
 
 # For uploading the outputs
 HUGGINGFACE_TOKEN=""
@@ -154,8 +142,7 @@ for MODEL in "${MODELS[@]}"; do
   TRAINING_TIMEOUT_SECONDS=$((HOURS_TO_COMPLETE * 3600))
 
   # Run the training container in detached mode
-  echo "Using GPUs: $GPUS"
-  docker run -d --gpus "$GPUS" \
+  docker run -d --gpus all \
     --security-opt=no-new-privileges \
     --cap-drop=ALL \
     --cpus=8 \
@@ -176,8 +163,8 @@ for MODEL in "${MODELS[@]}"; do
     --file-format "$FILE_FORMAT" \
     --hours-to-complete "$HOURS_TO_COMPLETE" \
     --expected-repo-name "$LOCAL_EXPECTED_REPO_NAME" \
-    --wandb-mode "online" \
-    --max-steps 900
+    --wandb-mode "offline" \
+    --max-steps 5
 
   TRAIN_CONTAINER_STATUS=0
   
@@ -240,8 +227,11 @@ for MODEL in "${MODELS[@]}"; do
     echo "  Game: $GAME_TO_EVAL | Evals: $EVAL_NUM_EVALS"
     echo "=========================================="
 
-    # Find the latest checkpoint directory produced by training
+    # Latest checkpoint: either HF checkpoint-* dirs or a flat LoRA dir (GRPO copies into submission_dir).
     LATEST_CHECKPOINT=$(ls -d "$LOCAL_FOLDER"/checkpoint-* 2>/dev/null | sort -t- -k2 -n | tail -1)
+    if [ -z "$LATEST_CHECKPOINT" ] && [ -f "$LOCAL_FOLDER/adapter_config.json" ]; then
+      LATEST_CHECKPOINT="$LOCAL_FOLDER"
+    fi
 
     if [ -z "$LATEST_CHECKPOINT" ]; then
       echo "Warning: No checkpoint found in $LOCAL_FOLDER — skipping evaluation."
@@ -257,6 +247,7 @@ for MODEL in "${MODELS[@]}"; do
       GAME_TO_EVAL="$GAME_TO_EVAL" \
       NUM_EVALS="$EVAL_NUM_EVALS" \
       NUM_GPUS="$EVAL_NUM_GPUS" \
+      REUSE_AGENTGYM_SERVERS=1 \
       "$PYTHON_BIN" "$SCRIPT_DIR/manual_environment_eval.py" 2>&1 | tee "$EVAL_LOG_FILE"
 
       echo "Evaluation complete. Log saved to: $EVAL_LOG_FILE"
@@ -277,8 +268,7 @@ echo "=========================================="
 
 # Cleanup environment servers (done once after all models)
 echo "Cleaning up environment servers..."
-NUM_SERVERS=4
-for i in $(seq 0 $((NUM_SERVERS-1))); do
+for i in $(seq 0 $((NUM_AGENTGYM_SERVERS - 1))); do
   docker rm -f "agentgym-server-$i" 2>/dev/null || true
 done
 echo "Environment servers cleaned up."
